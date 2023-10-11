@@ -1,0 +1,30 @@
+{
+  "name": "zis-parser-and-visualizer",
+  "version": "1.0.0",
+  "description": "Amazon state language Parser & Visualizer for ZIS bundle",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sureshungarala/ZIS_Parser_and_Visualizer.git"
+  },
+  "author": "Suresh Ungarala <iamuvvsuresh@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sureshungarala/ZIS_Parser_and_Visualizer/issues"
+  },
+  "homepage": "https://github.com/sureshungarala/ZIS_Parser_and_Visualizer#readme",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "dependencies": {
+    "@babel/core": "^7.23.0",
+    "@babel/plugin-transform-runtime": "^7.22.15",
+    "@babel/preset-env": "^7.22.20",
+    "@babel/preset-react": "^7.22.15"
+  }
+}

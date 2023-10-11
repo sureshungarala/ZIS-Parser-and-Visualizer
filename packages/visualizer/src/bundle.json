@@ -1,0 +1,363 @@
+{
+  "zis_template_version": "2019-10-14",
+  "name": "Update surviving ticket with transcript",
+  "description": "Update surviving ticket with transcript from merged ticket",
+  "resources": {
+    "{{customer-name}}_{{integration-name}}_jobspec": {
+      "type": "ZIS::JobSpec",
+      "properties": {
+        "name": "{{integration-name}}_spec",
+        "event_source": "support",
+        "event_type": "ticket.StatusChanged",
+        "flow_name": "zis:{{integration-name}}:flow:{{integration-name}}_flow"
+      }
+    },
+    "{{integration-name}}_flow": {
+      "type": "ZIS::Flow",
+      "properties": {
+        "name": "{{integration-name}}_flow",
+        "definition": {
+          "StartAt": "Choice.ValidateIfChannelIsMessagingAndStatusIsSolved",
+          "States": {
+            "Choice.ValidateIfChannelIsMessagingAndStatusIsSolved": {
+              "Type": "Choice",
+              "Comment": "Check if ticket-created channel is native-messaging",
+              "Choices": [
+                {
+                  "And": [
+                    {
+                      "Variable": "$.input.ticket_event.ticket.via.channel",
+                      "StringEquals": "native_messaging"
+                    },
+                    {
+                      "Variable": "$.input.ticket_event.ticket.status",
+                      "StringEquals": "solved"
+                    }
+                  ],
+                  "Next": "Transform.ParseIfMergedTagIsPresent"
+                }
+              ],
+              "Default": "Fail.NotMatchingCriteria"
+            },
+            "Transform.ParseIfMergedTagIsPresent": {
+              "Type": "Action",
+              "ActionName": "zis:common:transform:Jq",
+              "Parameters": {
+                "expr": ".tags | index(\"merged\") | if . < 0 then false else true end",
+                "data.$": "$.input.ticket_event.ticket"
+              },
+              "ResultPath": "$.mergedTagFound",
+              "Next": "Choice.CheckIfMergedTagIsPresent"
+            },
+            "Choice.CheckIfMergedTagIsPresent": {
+              "Type": "Choice",
+              "Comment": "Check if 'merged' tag is present",
+              "Choices": [
+                {
+                  "Variable": "$.mergedTagFound",
+                  "BooleanEquals": true,
+                  "Next": "ZIS.LoadConfig"
+                }
+              ],
+              "Default": "Fail.NotMatchingCriteria"
+            },
+            "Choice.CheckIfLastCommentAuthorIsSystem": {
+              "Type": "Choice",
+              "Comment": "Check if last comment author is system",
+              "Choices": [
+                {
+                  "Variable": "$.input.ticket_event.comment.author.id",
+                  "NumericEquals": -1,
+                  "Next": "ZIS.LoadConfig"
+                }
+              ],
+              "Default": "Fail.NotMatchingCriteria"
+            },
+            "ZIS.LoadConfig": {
+              "Type": "Action",
+              "ActionName": "zis:common:action:LoadConfig",
+              "Parameters": {
+                "scope": "{{integration-name}}_settings"
+              },
+              "ResultPath": "$.config",
+              "Next": "Zendesk.GetTicket"
+            },
+            "Zendesk.GetTicket": {
+              "Type": "Action",
+              "ActionName": "zis:{{integration-name}}:action:zendesk.GetTicket",
+              "Parameters": {
+                "ticketId.$": "{{$.input.ticket_event.ticket.id}}",
+                "access_token.$": "{{$.connections.zendesk.access_token}}"
+              },
+              "ResultPath": "$.ticket_details",
+              "Next": "Transform.ParseSurvivingTicketId",
+              "Catch": [
+                {
+                  "ErrorEquals": ["States.ALL"],
+                  "ResultPath": "$.get_ticket_error_response",
+                  "Next": "Choice.ShouldDebugGetTicket"
+                }
+              ]
+            },
+            "Choice.ShouldDebugGetTicket": {
+              "Type": "Choice",
+              "Comment": "Check if debugging is enabled in config",
+              "Choices": [
+                {
+                  "Variable": "$.config.debug_flow_actions",
+                  "BooleanEquals": true,
+                  "Next": "Debug.Zendesk.GetTicket"
+                }
+              ],
+              "Default": "Fail.GetTicketFailed"
+            },
+            "Debug.Zendesk.GetTicket": {
+              "Type": "Action",
+              "ActionName": "zis:{{integration-name}}:action:Debug.web_hook",
+              "Parameters": {
+                "data.$": "$",
+                "webhook": "{{debug-webhook-url}}"
+              },
+              "ResultPath": "$.debug_webhook_data",
+              "Next": "Fail.GetTicketFailed"
+            },
+            "Transform.ParseSurvivingTicketId": {
+              "Type": "Action",
+              "ActionName": "zis:common:transform:Jq",
+              "Parameters": {
+                "expr": ". as $root | $root.ticket_details.ticket.custom_fields as $fields | $root.config as $config | $fields[] | select(.id == $config.surviving_ticket_id_field_id).value",
+                "data.$": "$"
+              },
+              "ResultPath": "$.surviving_ticket_id",
+              "Next": "Choice.ShouldDebugParseSurvivingTicketId"
+            },
+            "Choice.ShouldDebugParseSurvivingTicketId": {
+              "Type": "Choice",
+              "Comment": "Check if debugging is enabled in config",
+              "Choices": [
+                {
+                  "Variable": "$.config.debug_flow_actions",
+                  "BooleanEquals": true,
+                  "Next": "Debug.Zendesk.ParseSurvivingTicketId"
+                }
+              ],
+              "Default": "Choice.CheckIfSurvivingTicketIdExists"
+            },
+            "Debug.Zendesk.ParseSurvivingTicketId": {
+              "Type": "Action",
+              "ActionName": "zis:{{integration-name}}:action:Debug.web_hook",
+              "Parameters": {
+                "data.$": "$",
+                "webhook": "{{debug-webhook-url}}"
+              },
+              "ResultPath": "$.debug_webhook_data",
+              "Next": "Choice.CheckIfSurvivingTicketIdExists"
+            },
+            "Choice.CheckIfSurvivingTicketIdExists": {
+              "Type": "Choice",
+              "Comment": "Check if debugging is enabled in config",
+              "Choices": [
+                {
+                  "Or": [
+                    {
+                      "Variable": "$.surviving_ticket_id",
+                      "IsNull": true
+                    },
+                    {
+                      "Variable": "$.surviving_ticket_id",
+                      "StringEquals": ""
+                    }
+                  ],
+                  "Next": "Fail.NotMatchingCriteria"
+                }
+              ],
+              "Default": "Zendesk.GetTicketComments"
+            },
+            "Zendesk.GetTicketComments": {
+              "Type": "Action",
+              "ActionName": "zis:{{integration-name}}:action:zendesk.GetTicketComments",
+              "Parameters": {
+                "ticketId.$": "{{$.input.ticket_event.ticket.id}}",
+                "access_token.$": "{{$.connections.zendesk.access_token}}"
+              },
+              "ResultPath": "$.ticketComments",
+              "Next": "Transform.ParseChatTranscriptsAndConstructCommentBody",
+              "Catch": [
+                {
+                  "ErrorEquals": ["States.ALL"],
+                  "ResultPath": "$.get_ticket_comments_error_response",
+                  "Next": "Fail.GetTicketCommentsFailed"
+                }
+              ]
+            },
+            "Transform.ParseChatTranscriptsAndConstructCommentBody": {
+              "Type": "Action",
+              "ActionName": "zis:common:transform:Jq",
+              "Parameters": {
+                "expr": ". as $root | $root.ticketComments.comments | (reduce .[] as $comment (\"\"; . + (if $comment.via.channel == \"chat_transcript\" then ($comment.body + \"\n\") else \"\" end))) as $comment | {comment: $comment, hasComment: ($comment != \"\")}",
+                "data.$": "$"
+              },
+              "ResultPath": "$.chat_transcripts",
+              "Next": "Choice.CheckIfCommentBodyIsNonEmpty"
+            },
+            "Choice.CheckIfCommentBodyIsNonEmpty": {
+              "Type": "Choice",
+              "Comment": "Check if ticket has chat_transcripts",
+              "Choices": [
+                {
+                  "Variable": "$.chat_transcripts.hasComment",
+                  "BooleanEquals": true,
+                  "Next": "Zendesk.UpdateTicket"
+                }
+              ],
+              "Default": "Succeed.Done"
+            },
+            "Zendesk.UpdateTicket": {
+              "Type": "Action",
+              "ActionName": "zis:{{integration-name}}:action:zendesk.UpdateTicket",
+              "Parameters": {
+                "tickeId.$": "{{$.surviving_ticket_id}}",
+                "comment.$": "{{$.chat_transcripts.comment}}",
+                "access_token.$": "{{$.connections.zendesk.access_token}}"
+              },
+              "ResultPath": "$.updated_ticket_details",
+              "Next": "Succeed.Done",
+              "Catch": [
+                {
+                  "ErrorEquals": ["States.ALL"],
+                  "ResultPath": "$.update_ticket_error_response",
+                  "Next": "Choice.ShouldDebugUpdateTicket"
+                }
+              ]
+            },
+            "Choice.ShouldDebugUpdateTicket": {
+              "Type": "Choice",
+              "Comment": "Check if debugging is enabled in config",
+              "Choices": [
+                {
+                  "Variable": "$.config.debug_flow_actions",
+                  "BooleanEquals": true,
+                  "Next": "Debug.Zendesk.UpdateTicket"
+                }
+              ],
+              "Default": "Fail.UpdateTicketFailed"
+            },
+            "Debug.Zendesk.UpdateTicket": {
+              "Type": "Action",
+              "ActionName": "zis:{{integration-name}}:action:Debug.web_hook",
+              "Parameters": {
+                "data.$": "$",
+                "webhook": "{{debug-webhook-url}}"
+              },
+              "ResultPath": "$.debug_webhook_data",
+              "Next": "Fail.UpdateTicketFailed"
+            },
+            "Fail.NotMatchingCriteria": {
+              "Type": "Succeed",
+              "Message": "Ticket did not match the required criteria."
+            },
+            "Fail.GetTicketFailed": {
+              "Type": "Fail",
+              "Error": "GetTicketFailed",
+              "Cause": "Failed to get ticket details. {{$.get_ticket_error_response.Cause}}"
+            },
+            "Fail.GetTicketCommentsFailed": {
+              "Type": "Fail",
+              "Error": "GetTicketCommentsFailed",
+              "Cause": "Failed to get ticket comments. {{$.get_ticket_comments_error_response.Cause}}"
+            },
+            "Fail.UpdateTicketFailed": {
+              "Type": "Fail",
+              "Error": "UpdateTicketFailed",
+              "Cause": "Failed to update ticket fields. {{$.update_ticket_error_response.Cause}}"
+            },
+            "Succeed.Done": {
+              "Type": "Succeed"
+            }
+          }
+        }
+      }
+    },
+    "zendesk.GetTicket": {
+      "type": "ZIS::Action::Http",
+      "properties": {
+        "name": "zendesk.GetTicket",
+        "definition": {
+          "method": "GET",
+          "url": "https://{{$.subdomain}}.{{$.zendeskHost}}/api/v2/tickets/{{$.ticketId}}.json",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Authorization",
+              "value": "Bearer {{$.access_token}}"
+            }
+          ]
+        }
+      }
+    },
+    "Zendesk.GetTicketComments": {
+      "type": "ZIS::Action::Http",
+      "properties": {
+        "name": "zendesk.GetTicketComments",
+        "definition": {
+          "method": "GET",
+          "url": "https://{{$.subdomain}}.{{$.zendeskHost}}/api/v2/tickets/{{$.ticketId}}/comments.json",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Authorization",
+              "value": "Bearer {{$.access_token}}"
+            }
+          ]
+        }
+      }
+    },
+    "zendesk.UpdateTicket": {
+      "type": "ZIS::Action::Http",
+      "properties": {
+        "name": "zendesk.UpdateTicket",
+        "definition": {
+          "method": "PUT",
+          "url": "https://{{$.subdomain}}.{{$.zendeskHost}}/api/v2/tickets/{{$.tickeId}}.json",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Authorization",
+              "value": "Bearer {{$.access_token}}"
+            }
+          ],
+          "requestBody": {
+            "ticket": {
+              "comment": {
+                "body": "{{$.comment}}",
+                "public": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "Debug.web_hook": {
+      "type": "ZIS::Action::Http",
+      "properties": {
+        "name": "Debug.web_hook",
+        "definition": {
+          "method": "POST",
+          "url": "{{$.webhook}}",
+          "requestBody": {
+            "data": "{{$.data}}"
+          }
+        }
+      }
+    }
+  }
+}

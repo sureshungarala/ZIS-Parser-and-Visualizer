@@ -1,0 +1,11 @@
+{
+  "name": "@zis-parser-and-visualizer/parser",
+  "version": "1.0.0",
+  "description": "ZIS bundle parser",
+  "main": "ZisValidator.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Suresh Ungarala <iamuvvsuresh@gmail.com>",
+  "license": "ISC"
+}
