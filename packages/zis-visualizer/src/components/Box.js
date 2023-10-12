@@ -10,6 +10,10 @@ const StyledObject = styled.foreignObject`
 
 function Box(props) {
   const rectRef = useRef(null);
+  let delta = 0;
+  if (props.choice) {
+    delta = Math.ceil(Math.sqrt(2 * Math.pow(props.width, 2))) - props.width;
+  }
   return (
     // <Draggable bounds='#vis-canvas' nodeRef={rectRef}>
     <g
@@ -28,13 +32,13 @@ function Box(props) {
         strokeWidth={props.strokeWidth ?? 2}
       ></rect>
       <StyledObject
-        x={props.x}
-        y={props.y}
-        width={props.width}
-        height={props.height}
+        x={props.x + delta / 2}
+        y={props.y + delta / 2}
+        width={props.width - delta}
+        height={props.height - delta}
       >
         <div className='grid-center' title={props.name}>
-          <span>{`${props.type}: ${props.name}`}</span>
+          <span>{props.name}</span>
         </div>
       </StyledObject>
     </g>

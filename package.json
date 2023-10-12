@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sureshungarala/ZIS_Parser_and_Visualizer.git"
+    "url": "git+https://github.com/sureshungarala/ZIS-Parser-and-Visualizer.git"
   },
   "author": "Suresh Ungarala <iamuvvsuresh@gmail.com>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/sureshungarala/ZIS_Parser_and_Visualizer/issues"
+    "url": "https://github.com/sureshungarala/ZIS-Parser-and-Visualizer/issues"
   },
-  "homepage": "https://github.com/sureshungarala/ZIS_Parser_and_Visualizer#readme",
+  "homepage": "https://github.com/sureshungarala/ZIS-Parser-and-Visualizer#readme",
   "workspaces": [
     "apps/*",
     "packages/*"

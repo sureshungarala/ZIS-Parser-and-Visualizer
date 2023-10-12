@@ -1,6 +1,13 @@
 #root {
   display: grid;
   justify-content: center;
+  /* From https://css-pattern.com/ 🙈*/
+  --s: 100px; /* control the size */
+
+  --_g: #0000 90deg, #e8e8e8 0;
+  background: conic-gradient(from 90deg at 2px 2px, var(--_g)),
+    conic-gradient(from 90deg at 1px 1px, var(--_g));
+  background-size: var(--s) var(--s), calc(var(--s) / 5) calc(var(--s) / 5);
 }
 span {
   font-size: 1rem;
@@ -9,7 +16,7 @@ span {
 
 #vis-canvas {
   position: relative;
-  border: 1px solid black;
+  /* border: 1px solid black; */
   border-radius: 4px;
 }
 
@@ -25,14 +32,6 @@ svg {
   justify-content: center;
   padding: 0.15rem;
 }
-
-/* .box {
-  width: 150px;
-  height: 100px;
-  border: 2px solid black;
-  border-radius: 4px;
-  cursor: pointer;
-} */
 
 .box.rotate rect {
   transform-box: fill-box;

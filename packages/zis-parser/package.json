@@ -1,5 +1,5 @@
 {
-  "name": "@zis-parser-and-visualizer/parser",
+  "name": "@suresh-ungarala/zis-parser",
   "version": "1.0.0",
   "description": "ZIS bundle parser",
   "main": "ZisValidator.js",
@@ -7,5 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Suresh Ungarala <iamuvvsuresh@gmail.com>",
-  "license": "ISC"
+  "license": "ISC",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
 }

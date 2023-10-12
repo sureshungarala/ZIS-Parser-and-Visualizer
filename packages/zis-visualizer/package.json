@@ -1,12 +1,12 @@
 {
-  "name": "@zis-parser-and-visualizer/visualizer",
+  "name": "@suresh-ungarala/zis-visualizer",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
-    "@zis-parser-and-visualizer/parser": "^1.0.0",
+    "@suresh-ungarala/zis-parser": "^1.0.0",
     "prop-types": "^15.7.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

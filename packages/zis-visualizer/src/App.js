@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
-import ZISValidator from '@zis-parser-and-visualizer/parser';
+// import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
+import ZISValidator from '@suresh-ungarala/zis-parser';
 
 import Box from './components/Box';
-// import Line from './components/Line';
 import CurvedLine from './components/CurvedLine';
 
 import bundle from './bundle.json';
@@ -17,11 +16,16 @@ function App() {
   const [flowStates, setFlowStates] = useState([]);
   useEffect(() => {
     const validator = new ZISValidator(bundle);
-    const result = validator.constructStatesFlow();
-    console.log('result ', result[0]);
-    const paths = constructFlowChart(result[0], { x: 500, y: 500 });
-    setFlowStates(paths);
-    console.log('paths ', paths);
+    const [isBundleValid, errors] = validator.validate();
+    if (isBundleValid) {
+      const result = validator.constructStatesFlow();
+      console.log('result ', result[0]);
+      const paths = constructFlowChart(result[0], { x: 500, y: 500 });
+      setFlowStates(paths);
+      console.log('paths ', paths);
+    } else {
+      console.log('errors ', errors);
+    }
   }, []);
 
   useEffect(() => {
@@ -29,7 +33,7 @@ function App() {
     if (svg) {
       // const { width, height } = svg.getBoundingClientRect();
       const { width, height, x, y } = svg.getBBox();
-      console.log('width ', width, ' height ', height, 'x', x, 'y', y);
+      // console.log('width ', width, ' height ', height, 'x', x, 'y', y);
       svg.setAttribute('viewBox', `${x} ${y} ${width} ${height}`);
       svg.setAttribute('width', width);
       svg.setAttribute('height', height);
@@ -63,7 +67,7 @@ function App() {
             markerHeight='6'
             orient='auto-start-reverse'
           >
-            <path d='M 0 0 L 10 5 L 0 10' />
+            <path d='M 0 0 L 10 5 L 0 10 z' />
           </marker>
         </defs>
         {flowStates.map((flowState) => {
@@ -86,46 +90,6 @@ function App() {
             );
           }
         })}
-        {/* <Box
-          x={0}
-          y={0}
-          width={150}
-          height={100}
-          fill='transparent'
-          stroke='black'
-          strokeWidth={2}
-          text='Suresh'
-        />
-        <Box
-          x={0 + testDelta}
-          y={175 + testDelta}
-          width={100}
-          height={100}
-          fill='transparent'
-          stroke='black'
-          strokeWidth={2}
-          text='Choice'
-          choice={true}
-        /> */}
-        {/* <Line
-          x1={75}
-          y1={100}
-          x2={75}
-          y2={200}
-          stroke='black'
-          strokeWidth={2}
-        /> */}
-        {/* <Box
-          x={200}
-          y={300}
-          width={150}
-          height={100}
-          fill='transparent'
-          stroke='black'
-          strokeWidth={2}
-          text='Sure'
-        /> */}
-        {/* <CurvedLine rect1={[0, 0, 150, 100]} rect2={[200, 300, 150, 100]} /> */}
       </svg>
       {/* </TransformComponent>
       </TransformWrapper> */}

@@ -1,7 +1,12 @@
+import PropTypes from 'prop-types';
+
+import { flowStateTypes } from '../utils/constants';
+
 /**
- *
- * @param {*} param0
- * @returns
+ * Draws a Straight / Curved line between two states
+ * @param {Object} source
+ * @param {Object} target
+ * @returns void
  */
 
 function CurvedLine({
@@ -25,8 +30,19 @@ function CurvedLine({
   const curveLen = 5;
   const strokeWidth = 2;
   let path = [];
-  // [50, 734, 100, 100]
-  // [50, 934, 150, 100]
+  let sourceDelta = 0;
+  let targetDelta = 0;
+
+  if (type1 === flowStateTypes.choice) {
+    sourceDelta = Math.floor(
+      (Math.floor(Math.sqrt(2 * Math.pow(width1, 2))) - width1) / 2
+    );
+  }
+  if (type2 === flowStateTypes.choice) {
+    targetDelta = Math.floor(
+      (Math.floor(Math.sqrt(2 * Math.pow(width2, 2))) - width2) / 2
+    );
+  }
 
   let lastX;
   let lastY;
@@ -40,7 +56,7 @@ function CurvedLine({
       ) {
         // draw a line from the bottom center of rect1 to the top center of rect2
         lastX = x1 + Math.floor(width1 / 2);
-        lastY = y1 + height1;
+        lastY = y1 + height1 - sourceDelta;
         path.push(`M${lastX},${lastY}`);
         lastY = y1 + height1 + Math.floor((y2 - (y1 + height1)) / 2) - curveLen;
         path.push(`L${lastX},${lastY}`);
@@ -52,22 +68,22 @@ function CurvedLine({
         lastX = lastX + curveLen;
         path.push(`Q${lastX},${lastY} ${lastX},${lastY + curveLen}`);
         // lastY = lastY + curveLen;
-        lastY = y2;
+        lastY = y2 - targetDelta;
         path.push(`L${lastX},${lastY}`);
       } else if (x1 + width1 >= x2) {
         // rect2 is smaller in width than rect1 and is below rect1
         // draw a line from a point on the rect1's bottom edge which is directly
         // above the top center of rect2 to the top center of rect2
         lastX = x2 + Math.floor(width2 / 2);
-        lastY = y1 + height1;
+        lastY = y1 + height1 - sourceDelta;
         path.push(`M${lastX},${lastY}`);
-        lastY = y2;
+        lastY = y2 - targetDelta;
         path.push(`L${lastX},${lastY}`);
       } else {
         // Frame 1 - 3
         // rect2 is below rect1, diagonally right but overlapping rect1 towards bottom right
         // draw a line from the right visible center of rect1 to the top visible center of rect2
-        lastX = x1 + width1;
+        lastX = x1 + width1 - sourceDelta;
         lastY =
           y1 +
           (y2 > y1 + height1
@@ -84,7 +100,7 @@ function CurvedLine({
         lastX = lastX + curveLen;
         path.push(`Q${lastX},${lastY} ${lastX},${lastY + curveLen}`);
         // lastY = lastY + curveLen;
-        lastY = y2;
+        lastY = y2 - targetDelta;
         path.push(`L${lastX},${lastY}`);
       }
     } else {
@@ -94,7 +110,7 @@ function CurvedLine({
       lastX =
         x1 +
         (x1 + width1 > x2 ? Math.floor((x2 - x1) / 2) : Math.floor(width1 / 2));
-      lastY = y1;
+      lastY = y1 - sourceDelta;
       path.push(`M${lastX},${lastY}`);
       lastY = y2 - curveLen;
       path.push(`L${lastX},${lastY}`);
@@ -106,7 +122,7 @@ function CurvedLine({
       lastX = lastX + curveLen;
       path.push(`Q${lastX},${lastY} ${lastX},${lastY + curveLen}`);
       // lastY = lastY + curveLen;
-      lastY = y2;
+      lastY = y2 - targetDelta;
       path.push(`L${lastX},${lastY}`);
     }
   } else if (x1 > x2) {
@@ -119,7 +135,7 @@ function CurvedLine({
         // rect2 is below rect1, diagonally left
         // draw a line from the bottom center of rect1 to the top center of rect2
         lastX = x1 + Math.floor(width1 / 2);
-        lastY = y1 + height1;
+        lastY = y1 + height1 - sourceDelta;
         path.push(`M${lastX},${lastY}`);
         lastY = y1 + height1 + Math.floor((y2 - (y1 + height1)) / 2) - curveLen;
         path.push(`L${lastX},${lastY}`);
@@ -131,13 +147,13 @@ function CurvedLine({
         lastX = lastX - curveLen;
         path.push(`Q${lastX},${lastY} ${lastX},${lastY + curveLen}`);
         // lastY = lastY + curveLen;
-        lastY = y2;
+        lastY = y2 - targetDelta;
         path.push(`L${lastX},${lastY}`);
       } else {
         // Frame 3 - bottom
         // rect2 is below rect1, diagonally left but overlapping rect1 towards bottom left
         // draw a line from the left center of rect1 to the top center of rect2
-        lastX = x1;
+        lastX = x1 - sourceDelta;
         lastY =
           y1 +
           (y2 > y1 + height1
@@ -154,7 +170,7 @@ function CurvedLine({
         lastX = lastX - curveLen;
         path.push(`Q${lastX},${lastY} ${lastX},${lastY + curveLen}`);
         // lastY = lastY + curveLen;
-        lastY = y2;
+        lastY = y2 - targetDelta;
         path.push(`L${lastX},${lastY}`);
       }
     } else {
@@ -166,7 +182,7 @@ function CurvedLine({
         (x1 < x2 + width2
           ? Math.floor((x1 + width1 - (x2 + width2)) / 2)
           : Math.floor(width1 / 2));
-      lastY = y1;
+      lastY = y1 - sourceDelta;
       path.push(`M${lastX},${lastY}`);
       lastY = y2 - curveLen;
       path.push(`L${lastX},${lastY}`);
@@ -178,7 +194,7 @@ function CurvedLine({
       lastX = lastX - curveLen;
       path.push(`Q${lastX},${lastY} ${lastX},${lastY + curveLen}`);
       // lastY = lastY + curveLen;
-      lastY = y2;
+      lastY = y2 - targetDelta;
       path.push(`L${lastX},${lastY}`);
     }
   } else if (y1 < y2) {
@@ -187,13 +203,13 @@ function CurvedLine({
     // draw a STRAIGHT line from the bottom center of rect1 to the top center of rect2
     if (y1 + height1 < y2) {
       lastX = x1 + Math.floor(width1 / 2);
-      lastY = y1 + height1;
+      lastY = y1 + height1 + sourceDelta;
       path.push(`M${lastX},${lastY}`);
-      lastY = y2;
+      lastY = y2 - targetDelta;
       path.push(`L${lastX},${lastY}`);
     } else {
       // draw a line from the left visible center of rect1 to the left visible center of rect2
-      lastX = x1;
+      lastX = x1 - sourceDelta;
       lastY =
         y1 +
         (y1 + height1 > y2
@@ -215,14 +231,14 @@ function CurvedLine({
       lastY = lastY + curveLen;
       path.push(`Q${lastX},${lastY} ${lastX + curveLen},${lastY}`);
       // lastX = lastX + curveLen;
-      lastX = x2;
+      lastX = x2 - targetDelta;
       path.push(`L${lastX},${lastY}`);
     }
   } else {
     // Frame 5 - right
     // rect2 is above rect1
     // draw a line from the left visible center of rect1 to the left visible center of rect2
-    lastX = x1;
+    lastX = x1 - sourceDelta;
     lastY =
       y1 +
       (y2 + height2 > y1
@@ -244,7 +260,7 @@ function CurvedLine({
     lastY = lastY - curveLen;
     path.push(`Q${lastX},${lastY} ${lastX + curveLen},${lastY}`);
     // lastX = lastX + curveLen;
-    lastX = x2;
+    lastX = x2 - targetDelta;
     path.push(`L${lastX},${lastY}`);
   }
 
@@ -259,5 +275,24 @@ function CurvedLine({
     />
   );
 }
+
+CurvedLine.propTypes = {
+  source: PropTypes.shape({
+    x: PropTypes.number,
+    y: PropTypes.number,
+    width: PropTypes.number,
+    height: PropTypes.number,
+    name: PropTypes.string,
+    type: PropTypes.string,
+  }),
+  target: PropTypes.shape({
+    x: PropTypes.number,
+    y: PropTypes.number,
+    width: PropTypes.number,
+    height: PropTypes.number,
+    name: PropTypes.string,
+    type: PropTypes.string,
+  }),
+};
 
 export default CurvedLine;
