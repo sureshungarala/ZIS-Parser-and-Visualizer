@@ -137,7 +137,6 @@ function ZisValidator(jsonBundle) {
 }
 
 ZisValidator.prototype.validate = function () {
-  // const scaffoldResult = validateScaffold(bundleRules, this.json, this.errors);
   // validate bundle scaffold
   let [scaffoldResult, ...scaffoldErrors] = validateState(
     bundleScaffoldRules,

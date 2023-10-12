@@ -40,7 +40,6 @@ function App() {
     }
   }, [flowStates]);
 
-  const testDelta = Math.ceil(Math.sqrt(2 * Math.pow(100, 2))) - 100;
   return (
     <div id='vis-canvas'>
       {/* <TransformWrapper>
@@ -71,24 +70,22 @@ function App() {
           </marker>
         </defs>
         {flowStates.map((flowState) => {
-          {
-            if (flowState.__flowType === 'state') {
-              return (
-                <Box
-                  key={flowState.name}
-                  {...flowState}
-                  choice={flowState.type === flowStateTypes.choice}
-                />
-              );
-            }
+          if (flowState.__flowType === 'state') {
             return (
-              <CurvedLine
-                key={`${flowState.source.name}-${flowState.target.name}`}
-                source={flowState.source}
-                target={flowState.target}
+              <Box
+                key={flowState.name}
+                {...flowState}
+                choice={flowState.type === flowStateTypes.choice}
               />
             );
           }
+          return (
+            <CurvedLine
+              key={`${flowState.source.name}-${flowState.target.name}`}
+              source={flowState.source}
+              target={flowState.target}
+            />
+          );
         })}
       </svg>
       {/* </TransformComponent>
