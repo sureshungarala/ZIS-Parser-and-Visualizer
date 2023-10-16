@@ -1,5 +1,5 @@
-const { validateState } = require('../validationHelpers.js');
-const { type, value } = require('../validators.js');
+const { validateState } = require('../utils/validationHelpers.js');
+const { type, value } = require('../utils/validators.js');
 const { ruleOperators } = require('../utils/constants.js');
 
 const { isBoolean, isObject, isString } = type;
@@ -35,8 +35,13 @@ const rules = [
   },
 ];
 
-function passStateValidator(action) {
-  return validateState(rules, action);
+/**
+ * Validates the Pass state object against the rules.
+ * @param {Object} state State object
+ * @returns {[boolean, ...string[]]} [result, ...errors]
+ */
+function passStateValidator(state) {
+  return validateState(rules, state);
 }
 
 module.exports = passStateValidator;

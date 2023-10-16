@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-// import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
-import ZISValidator from '@suresh-ungarala/zis-parser';
+import ZISValidator from 'zis-parser';
 
 import Box from './components/Box';
 import CurvedLine from './components/CurvedLine';
@@ -42,11 +41,6 @@ function App() {
 
   return (
     <div id='vis-canvas'>
-      {/* <TransformWrapper>
-        <TransformComponent> */}
-      {/* Since SVG is not an instanceOf HTMLElement which draggable supports 
-      as a bounding container, moving the id to parent div pasing the same
-      in bounds for draggable components*/}
       <svg
         xmlns='http://www.w3.org/2000/svg'
         width={1000}
@@ -88,8 +82,6 @@ function App() {
           );
         })}
       </svg>
-      {/* </TransformComponent>
-      </TransformWrapper> */}
     </div>
   );
 }

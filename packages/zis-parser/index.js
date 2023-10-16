@@ -1,13 +1,14 @@
 const {
   type: typeValidators,
   value: valueValidators,
-} = require('./validators.js');
+} = require('./utils/validators.js');
 const {
   validateStates,
   validateState,
   constructStatesList,
-} = require('./validationHelpers.js');
+} = require('./utils/validationHelpers.js');
 const { prefixMsg } = require('./utils/helpers.js');
+const TypeDefs = require('./utils/typeDefs.js');
 
 const { isString, isObject } = typeValidators;
 const {
@@ -18,7 +19,10 @@ const {
   mustHaveMinChildren,
 } = valueValidators;
 
-// rules for ZIS job spec
+/**
+ * @type {Array<TypeDefs.Rule>}
+ * rules for ZIS job spec
+ */
 const jobSpecRules = [
   {
     name: 'type',
@@ -51,7 +55,10 @@ const jobSpecRules = [
   },
 ];
 
-// rules for ZIS flow
+/**
+ * @type {Array<TypeDefs.Rule>}
+ * rules for ZIS flow
+ */
 const flowRules = [
   {
     name: 'type',
@@ -85,7 +92,10 @@ const flowRules = [
   },
 ];
 
-// rules for ZIS bundle scaffold
+/**
+ * @type {Array<TypeDefs.Rule>}
+ * rules for ZIS bundle scaffold
+ */
 const bundleScaffoldRules = [
   {
     name: 'zis_template_version',
@@ -121,21 +131,41 @@ const bundleScaffoldRules = [
 
 /**
  * Validates a ZIS bundle
- * @param {JSON} jsonBundle
+ * @class
+ * @param {Object} jsonBundle ZIS bundle
  */
 function ZisValidator(jsonBundle) {
   this.json = jsonBundle;
+
+  /**
+   * @type {Array<string>}
+   */
   this.errors = [];
 
+  /**
+   * @type {Object}
+   */
   const resources = this.json['resources'];
+
+  /**
+   * @type {Array<Object>}
+   */
   this.jobSpecs = Object.values(resources).filter(
     (value) => value.type === 'ZIS::JobSpec'
   );
+
+  /**
+   * @type {Array<Object>}
+   */
   this.flows = Object.values(resources).filter(
     (value) => value.type === 'ZIS::Flow'
   );
 }
 
+/**
+ * Validates the ZIS bundle against the rules.
+ * @returns {[boolean, ...string[]]} [result, ...errors]
+ */
 ZisValidator.prototype.validate = function () {
   // validate bundle scaffold
   let [scaffoldResult, ...scaffoldErrors] = validateState(
@@ -185,6 +215,10 @@ ZisValidator.prototype.validate = function () {
   return [this.errors.length === 0, this.errors];
 };
 
+/**
+ * Constructs the states flow paths for flow properties definition.
+ * @returns {Array<Array<TypeDefs.StatePath>>} Array of state paths for each flow
+ */
 ZisValidator.prototype.constructStatesFlow = function () {
   return this.flows.map((flow) =>
     constructStatesList(

@@ -1,5 +1,5 @@
-var { validateState } = require('../validationHelpers.js');
-const { type, value } = require('../validators.js');
+var { validateState } = require('../utils/validationHelpers.js');
+const { type, value } = require('../utils/validators.js');
 const {
   ruleOperators,
   dataOperators,
@@ -227,8 +227,13 @@ const rules = [
   },
 ];
 
-function choiceStateValidator(action) {
-  return validateState(rules, action);
+/**
+ * Validates the Choice state object against the rules.
+ * @param {Object} state State object
+ * @returns {[boolean, ...string[]]} [result, ...errors]
+ */
+function choiceStateValidator(state) {
+  return validateState(rules, state);
 }
 
 module.exports = choiceStateValidator;

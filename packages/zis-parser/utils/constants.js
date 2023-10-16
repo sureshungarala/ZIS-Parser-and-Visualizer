@@ -1,3 +1,7 @@
+/**
+ * @module utils/constants
+ */
+
 const ruleOperators = {
   allOf: 'AllOf',
   or: 'Or',
@@ -6,6 +10,7 @@ const ruleOperators = {
 
 const dataOperators = {
   all: 'All',
+  // TODO: Handle this in validateState function
   some: 'Some',
 };
 

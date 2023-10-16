@@ -1,6 +1,6 @@
 import * as json from './bundle.json' assert { type: 'json' };
 
-import ZisValidator from './ZisValidator.js';
+import ZisValidator from './index.js';
 
 // console.log('json', json.default, typeof json.default, Object.keys(json.default));
 const validator = new ZisValidator(json.default);

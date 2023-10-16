@@ -1,5 +1,5 @@
-const { validateState } = require('../validationHelpers.js');
-const { type, value } = require('../validators.js');
+const { validateState } = require('../utils/validationHelpers.js');
+const { type, value } = require('../utils/validators.js');
 const {
   actionTypes,
   ruleOperators,
@@ -343,12 +343,17 @@ function propertiesRules(action) {
   return rules;
 }
 
-function actionStateValidator(action) {
-  const propertyRules = propertiesRules(action);
+/**
+ * Validates the Action staet object against the rules.
+ * @param {Object} state State object
+ * @returns {[boolean, ...string[]]} [result, ...errors]
+ */
+function actionStateValidator(state) {
+  const propertyRules = propertiesRules(state);
   if (!propertyRules.length) {
-    return [false, `ActionName: ${action.ActionName} is not supported`];
+    return [false, `ActionName: ${state.ActionName} is not supported`];
   } else {
-    return validateState([...rules, ...propertyRules], action);
+    return validateState([...rules, ...propertyRules], state);
   }
 }
 

@@ -1,8 +1,8 @@
 /**
  * Prefixes a message with a prefix
- * @param {String} prefix
- * @param {String} text
- * @returns {String}
+ * @param {string} prefix
+ * @param {string} text
+ * @returns {string}
  */
 function prefixMsg(text, prefix) {
   return `${prefix} => ${text}`;

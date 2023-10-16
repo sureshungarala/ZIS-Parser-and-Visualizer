@@ -1,5 +1,5 @@
-const { validateState } = require('../validationHelpers.js');
-const { type, value } = require('../validators.js');
+const { validateState } = require('../utils/validationHelpers.js');
+const { type, value } = require('../utils/validators.js');
 
 const { isString } = type;
 const { mustBeEqualTo, mustNotBeEmpty } = value;
@@ -20,8 +20,13 @@ const rules = [
   },
 ];
 
-function failStateValidator(action) {
-  return validateState(rules, action);
+/**
+ * Validates the Fail state object against the rules.
+ * @param {Object} state State object
+ * @returns {[boolean, ...string[]]} [result, ...errors]
+ */
+function failStateValidator(state) {
+  return validateState(rules, state);
 }
 
 module.exports = failStateValidator;

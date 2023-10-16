@@ -1,5 +1,8 @@
-const { validateStates, validateState } = require('../validationHelpers.js');
-const { type, value } = require('../validators.js');
+const {
+  validateStates,
+  validateState,
+} = require('../utils/validationHelpers.js');
+const { type, value } = require('../utils/validators.js');
 const { ruleOperators } = require('../utils/constants.js');
 
 const { isArray, isBoolean, isString, isObject } = type;
@@ -19,7 +22,7 @@ const rules = [
   },
   {
     name: 'InputPath',
-    validators: [anyOf(isOptional, isString, mustNotBeEmpty)],
+    validators: [anyOf(isOptional, [isString, mustNotBeEmpty])],
   },
   {
     name: 'ItemsPath',
@@ -61,16 +64,21 @@ const rules = [
   },
   {
     name: 'Catch',
-    validators: [anyOf(isOptional, isArray, mustHaveMinChildren)],
+    validators: [anyOf(isOptional, [isArray, mustHaveMinChildren])],
     minChildren: 1,
   },
 ];
 
-function mapStateValidator(action) {
-  let [result, ...errors] = validateState(rules, action);
+/**
+ * Validates the Map state object against the rules.
+ * @param {Object} state State object
+ * @returns {[boolean, ...string[]]} [result, ...errors]
+ */
+function mapStateValidator(state) {
+  let [result, ...errors] = validateState(rules, state);
   if (result) {
     const [mapStatesResult, mapStatesErrors] = validateStates(
-      action.Iterator.States
+      state.Iterator.States
     );
     if (!mapStatesResult && mapStatesErrors.length) {
       errors.push(...mapStatesErrors);

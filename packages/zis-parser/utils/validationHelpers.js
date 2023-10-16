@@ -1,7 +1,14 @@
 const { getRuleName } = require('./validators.js');
-const { prefixMsg } = require('./utils/helpers.js');
-const { dataOperators, ruleOperators } = require('./utils/constants.js');
+const { prefixMsg } = require('./helpers.js');
+const { dataOperators, ruleOperators } = require('./constants.js');
+const TypeDefs = require('./typeDefs.js');
 
+/**
+ * Validates the state object against the rules.
+ * @param {Array<TypeDefs.Rule>} rules
+ * @param {Object} json State object
+ * @returns {[boolean, ...string[]]} [result, ...errors]
+ */
 function validateState(rules, json) {
   const errors = [];
   if (typeof json !== 'object') {
@@ -124,6 +131,11 @@ function validateState(rules, json) {
   return [result, ...errors];
 }
 
+/**
+ * Validates the states object against the rules.
+ * @param {Object} states States object in the flow properties definition.
+ * @returns {[boolean, ...string[]]} [result, ...errors]
+ */
 function validateStates(states) {
   const errors = [];
   for (const [key, value] of Object.entries(states)) {
@@ -155,6 +167,12 @@ function validateStates(states) {
   return [errors.length === 0, errors];
 }
 
+/**
+ * Constructs the states list for charting from the states object.
+ * @param {Object} states States object in the flow properties definition.
+ * @param {string} startAt  StartAt object in the flow properties definition
+ * @returns {Array<TypeDefs.StatePath>} statePathList
+ */
 function constructStatesList(states, startAt) {
   let statesList = [];
   let currentStateName = startAt;
@@ -250,10 +268,10 @@ function constructStatesList(states, startAt) {
 module.exports = { validateState, validateStates, constructStatesList };
 
 // placing it below the exports to avoid circular dependency error 🤦‍♂️.
-const actionStateValidator = require('./flowStates/actionStateValidator.js');
-const succeedStateValidator = require('./flowStates/succeedStateValidator.js');
-const failStateValidator = require('./flowStates/failStateValidator.js');
-const waitStateValidator = require('./flowStates/waitStateValidator.js');
-const passStateValidator = require('./flowStates/passStateValidator.js');
-const choiceStateValidator = require('./flowStates/choiceStateValidator.js');
-const mapStateValidator = require('./flowStates/mapStateValidator.js');
+const actionStateValidator = require('../flowStates/actionStateValidator.js');
+const succeedStateValidator = require('../flowStates/succeedStateValidator.js');
+const failStateValidator = require('../flowStates/failStateValidator.js');
+const waitStateValidator = require('../flowStates/waitStateValidator.js');
+const passStateValidator = require('../flowStates/passStateValidator.js');
+const choiceStateValidator = require('../flowStates/choiceStateValidator.js');
+const mapStateValidator = require('../flowStates/mapStateValidator.js');
