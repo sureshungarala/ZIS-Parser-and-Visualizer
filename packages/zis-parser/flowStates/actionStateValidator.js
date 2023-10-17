@@ -344,7 +344,7 @@ function propertiesRules(action) {
 }
 
 /**
- * Validates the Action staet object against the rules.
+ * Validates the Action state object against the rules.
  * @param {Object} state State object
  * @returns {[boolean, ...string[]]} [result, ...errors]
  */
