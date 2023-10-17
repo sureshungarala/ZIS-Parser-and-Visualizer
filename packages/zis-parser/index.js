@@ -12,17 +12,18 @@ const failStateValidator = require('./flowStates/failStateValidator.js');
 const waitStateValidator = require('./flowStates/waitStateValidator.js');
 const passStateValidator = require('./flowStates/passStateValidator.js');
 
-module.exports = zisValidator;
-
-module.exports.validators = {
-  scaffoldValidator,
-  jobSpecValidator,
-  flowValidator,
-  actionStateValidator,
-  succeedStateValidator,
-  failStateValidator,
-  waitStateValidator,
-  passStateValidator,
-  choiceStateValidator,
-  mapStateValidator,
+module.exports = {
+  ZISValidator: zisValidator,
+  validators: {
+    scaffoldValidator,
+    jobSpecValidator,
+    flowValidator,
+    actionStateValidator,
+    choiceStateValidator,
+    mapStateValidator,
+    succeedStateValidator,
+    failStateValidator,
+    waitStateValidator,
+    passStateValidator,
+  },
 };

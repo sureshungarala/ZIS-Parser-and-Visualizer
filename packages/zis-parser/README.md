@@ -6,10 +6,10 @@ This package contains a parser for the Amazon State Language (ASL) that is used 
 
 ```js
 // ES6
-import ZISValidator from 'zis-parser';
+import { ZISValidator, validators } from 'zis-parser';
 
 // commonjs
-const ZISValidator = require('zis-parser').default;
+const { ZISValidator, validators } = require('zis-parser');
 
 // bundle is a JSON object that contains the ZIS bundle
 const validator = new ZISValidator(bundle);
@@ -19,4 +19,21 @@ const [result, ...errors] = validator.validate();
 
 // constructs the states flow and returns the paths/relations between states
 const statePaths = validator.constructStatesFlow();
+
+// Destructure the validators to use them individually
+const {
+  scaffoldValidator,
+  jobSpecValidator,
+  flowValidator,
+  actionStateValidator,
+  choiceStateValidator,
+  mapStateValidator,
+  succeedStateValidator,
+  failStateValidator,
+  waitStateValidator,
+  passStateValidator,
+} = validators;
+
+// validate a single state
+const [result, ...errors] = actionStateValidator(state);
 ```

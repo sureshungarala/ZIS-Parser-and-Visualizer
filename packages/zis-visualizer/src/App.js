@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import ZISValidator from 'zis-parser';
+import { ZISValidator } from 'zis-parser';
 
 import Box from './components/Box';
 import CurvedLine from './components/CurvedLine';
