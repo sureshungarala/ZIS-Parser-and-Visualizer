@@ -1,13 +1,24 @@
 {
   "name": "zis-parser",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "ZIS bundle parser",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "author": "Suresh Ungarala <iamuvvsuresh@gmail.com>",
   "license": "ISC",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "types": "npx tsc"
+  },
+  "keywords": [
+    "ZIS",
+    "parser",
+    "AST",
+    "Amazon State Language"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sureshungarala/ZIS-Parser-and-Visualizer/tree/main/packages/zis-parser"
+  },
+  "main": "index.js",
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"

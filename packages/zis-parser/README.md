@@ -1,8 +1,8 @@
-# Amazon State Language Parser for ZIS bundle
+## Amazon State Language Parser for ZIS bundle
 
 This package contains a parser for the Amazon State Language (ASL) that is used in the [ZIS](https://developer.zendesk.com/documentation/integration-services/) bundle.
 
-## Usage
+### Usage
 
 ```js
 // ES6

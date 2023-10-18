@@ -10031,9 +10031,9 @@
   "resolved" "https://registry.npmjs.org/yocto-queue/-/yocto-queue-0.1.0.tgz"
   "version" "0.1.0"
 
-"zis-parser@^1.2.1", "zis-parser@file:/Users/sungarala/Documents/my-GitHub/ZIS_Parser_and_Visualizer/packages/zis-parser":
+"zis-parser@^1.2.2", "zis-parser@file:/Users/sungarala/Documents/my-GitHub/ZIS_Parser_and_Visualizer/packages/zis-parser":
   "resolved" "file:packages/zis-parser"
-  "version" "1.2.1"
+  "version" "1.2.2"
 
 "zis-visualizer@file:/Users/sungarala/Documents/my-GitHub/ZIS_Parser_and_Visualizer/packages/zis-visualizer":
   "resolved" "file:packages/zis-visualizer"
@@ -10050,4 +10050,4 @@
     "react-zoom-pan-pinch" "^3.1.0"
     "styled-components" "^6.0.8"
     "web-vitals" "^2.1.4"
-    "zis-parser" "^1.2.1"
+    "zis-parser" "^1.2.2"
