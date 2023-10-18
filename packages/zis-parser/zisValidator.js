@@ -2,7 +2,7 @@ const {
   validateStates,
   constructStatesList,
 } = require('./utils/validationHelpers.js');
-const scaffoldValidator = require('./bundleScaffold/scaffoldValidator.js');
+const scaffoldValidator = require('./bundleScaffold/outerScaffoldValidator.js');
 const jobSpecValidator = require('./bundleScaffold/jobSpecValidator.js');
 const flowValidator = require('./bundleScaffold/flowValidator.js');
 const { prefixMsg } = require('./utils/helpers.js');

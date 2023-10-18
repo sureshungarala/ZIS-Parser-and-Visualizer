@@ -16,6 +16,7 @@ function App() {
   useEffect(() => {
     const validator = new ZISValidator(bundle);
     const [isBundleValid, errors] = validator.validate();
+    console.log('isBundleValid, errors ', isBundleValid, errors);
     if (isBundleValid) {
       const result = validator.constructStatesFlow();
       console.log('result ', result[0]);

@@ -96,7 +96,7 @@ function validateState(rules, json) {
           const [result, ...ruleErrors] = validateState(rule.children, json);
           if (!result && ruleErrors.length) {
             errors.push(
-              `No object of ${rule.children[0].name ?? ''} =>${
+              `No matching object of ${rule.children[0].name ?? ''} =>${
                 rule.children[0].value ?? ''
               } found.`
             );
@@ -154,6 +154,8 @@ function validateStates(states) {
       stateResult = failStateValidator(value);
     } else if (value.Type === 'Wait') {
       stateResult = waitStateValidator(value);
+    } else {
+      errors.push(`Invalid state type '${value.Type}' for state '${key}'.`);
     }
     const [result, ...stateErrors] = stateResult;
     if (!result && stateErrors.length) {
